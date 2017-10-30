@@ -48,11 +48,60 @@ class Gdax
         echo "\nTESTING START...\n\n";
         //print_r($this->call('candles',null,array('start'=>'2017-09-27T02:23:00Z','end'=>'2017-09-59T02:24:00Z','granularity'=>1)));
         //echo print_r($this->call('coinbase-accounts')['response']);
-        $this->backfill("-2 hours");
+        $this->backfillTicks("-10 hours");
         echo "\n\nTESTING END...\n\n";
     }
 
-    public function backfill($startDate=null,$pair=null)
+    public function backfillTicks($startDate=null,$pair=null,$after=null)
+    {
+        echo "START\n";
+        if($after!=null){
+            $return = $this->call('trades',null,array('after'=>$after));
+        }else{
+            $return = $this->call('trades');
+        }
+        $responseCode = $return['responseCode'];
+        $response = $return['response'];
+        
+        if($startDate==null){
+            $startDate = strtotime("-1 Day");
+        }else{
+            $startDate = strtotime($startDate);
+        }
+
+        $oldestTime=strtotime("now");
+
+        if($responseCode==200){
+            $response = json_decode($response);
+            foreach($response as $tick){
+                $timestamp = $tick->time;
+                $trade_id = $tick->trade_id;
+                $price = $tick->price;
+                $size = $tick->size;
+                $side = $tick->side;
+
+                $oldestTime = strtotime($timestamp);
+                $after=$trade_id;
+            }
+        }
+        
+
+        echo "CHECK: ".$oldestTime." -> ".$startDate." COUNT: ".$after."\n";
+
+        if($responseCode==429){
+            echo "Rate Limited!\nSleeping 10 Seconds!\n";
+            sleep(10);
+            $this->backfillTicks($startDate,$pair,$after);
+        }elseif($responseCode == 200 && $oldestTime > $startDate){
+            echo "Another Call Needed!\n";
+            $this->backfillTicks(date('Y-m-d H:i:s',$startDate),$pair,$after);
+        }elseif($responseCode != 200){
+            echo "Unknown Error!\n";
+            echo $responseCode." - ".$return['response'];
+        }
+    }
+
+    public function backfillCandles($startDate=null,$pair=null)
     {
         /*TODO
           Check Database and see if $startdate < most recent candle
@@ -104,10 +153,10 @@ class Gdax
         if($responseCode==429){
             echo "Rate Limited!\nSleeping 10 Seconds!\n";
             sleep(10);
-            $this->backfill($startDate);
+            $this->backfill($startDate,$pair);
         }elseif($responseCode == 200 && strtotime($endDate) < strtotime('now')){
             echo "Another Call Needed!\n";
-            $this->backfill($endDate);
+            $this->backfill($endDate,$pair);
         }elseif($responseCode != 200){
             echo "Unknown Error!\n";
             echo $responseCode." - ".$return['response'];
