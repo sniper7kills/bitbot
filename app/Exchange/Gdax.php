@@ -171,7 +171,7 @@ class Gdax
         }
     }
 
-    private function call($endpoint, $body=null, $extra=null, $pair=null, $method='GET')
+    public function call($endpoint, $body=null, $extra=null, $pair=null, $method='GET')
     {
         if($pair==null){
             $pair=$this->defaultPair;
