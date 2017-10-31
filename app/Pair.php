@@ -12,4 +12,13 @@ class Pair extends Model
     protected $fillable = array('name');
     protected $visible = array('name');
 
+    public function exchange()
+    {
+        return $this->belongsTo('App\Exchange');
+    }
+
+    public function ticks()
+    {
+        return $this->hasMany('App\Tick');
+    }
 }

@@ -12,4 +12,8 @@ class Tick extends Model
     protected $fillable = array('trade_id', 'price', 'size', 'timestamp');
     protected $visible = array('trade_id', 'price', 'size', 'timestamp');
 
+    public function pair()
+    {
+        return $this->belongsTo('App\Pair');
+    }
 }

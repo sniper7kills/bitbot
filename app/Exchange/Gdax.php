@@ -2,14 +2,16 @@
 
 namespace App\Exchange;
 
+use \App\Exchange;
+
 class Gdax
 {
     protected $url = 'https://api.gdax.com';
-
     protected $key;
     protected $secret;
     protected $passphrase;
     protected $defaultPair;
+    protected $exchange;
 
     protected $endpoints = array(
         'accounts'   => array('method' => 'GET', 'uri' => '/accounts'),
@@ -41,6 +43,8 @@ class Gdax
         $this->secret = env('GDAX.SECRET');
         $this->passphrase = env('GDAX.PASSPHRASE');
         $this->defaultPair = env('GDAX.DEFAULTPAIR');
+
+        $this->exchange = \App\Exchange::firstOrCreate(['name'=>'GDAX']);
     }
 
     public function test()
@@ -55,8 +59,12 @@ class Gdax
     public function backfillTicks($startDate=null,$pair=null,$after=null)
     {
         echo "START\n";
+        if($pair==null){
+            $pair=$this->defaultPair;
+        }
+        $EPair=$this->exchange->pairs()->firstOrCreate(['name'=>strtoupper($pair)]);
         if($after!=null){
-            $return = $this->call('trades',null,array('after'=>$after));
+            $return = $this->call('trades',null,array('after'=>$after),$pair);
         }else{
             $return = $this->call('trades');
         }
@@ -134,7 +142,7 @@ class Gdax
         $endDate = $date."T".$time.":".$seconds."Z";
         echo $startDate." -> ".$endDate."\n";
 
-        $return = $this->call('rates',null,array('start'=>$startDate,'end'=>$endDate,'granularity'=>'30'));
+        $return = $this->call('rates',null,array('start'=>$startDate,'end'=>$endDate,'granularity'=>'30',$pair));
         $responseCode = $return['responseCode'];
         $response = $return['response'];
 

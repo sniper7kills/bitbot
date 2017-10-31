@@ -12,4 +12,8 @@ class Exchange extends Model
     protected $fillable = array('name');
     protected $visible = array('name');
 
+    public function pairs()
+    {
+        return $this->hasMany('App\Pair');
+    }
 }
