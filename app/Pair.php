@@ -9,8 +9,8 @@ class Pair extends Model
 
     protected $table = 'pairs';
     public $timestamps = true;
-    protected $fillable = array('name');
-    protected $visible = array('name');
+    protected $fillable = array('name','enabled');
+    protected $visible = array('name','enabled');
 
     public function exchange()
     {

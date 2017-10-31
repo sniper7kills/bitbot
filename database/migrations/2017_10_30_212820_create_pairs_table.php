@@ -12,6 +12,7 @@ class CreatePairsTable extends Migration {
 			$table->timestamps();
 			$table->integer('exchange_id')->unsigned()->index();
 			$table->string('name');
+                        $table->boolean('enabled')->default(FALSE);
 		});
 	}
 
