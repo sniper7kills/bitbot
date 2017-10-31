@@ -54,7 +54,7 @@ class Gdax
         echo "\nTESTING START...\n\n";
         //print_r($this->call('candles',null,array('start'=>'2017-09-27T02:23:00Z','end'=>'2017-09-59T02:24:00Z','granularity'=>1)));
         //echo print_r($this->call('coinbase-accounts')['response']);
-        $this->backfillTicks("-10 hours");
+        $this->backfillTicks("-4 years");
         echo "\n\nTESTING END...\n\n";
     }
 
