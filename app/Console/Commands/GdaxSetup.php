@@ -46,7 +46,7 @@ class GdaxSetup extends Command
     public function handle()
     {
         $response = $this->api->call('products');
-        if($response['responseCode'] != 200)
+        if($response['responseCode'] == 200)
         {
             $response = json_decode($response['response']);
             foreach($response as $product)
