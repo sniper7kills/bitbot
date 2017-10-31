@@ -49,7 +49,6 @@ class GdaxStream extends Command
     {
         \Ratchet\Client\connect('wss://ws-feed.gdax.com')->then(function($conn) {
             $conn->on('message', function($msg) use ($conn) {
-                //echo "Received: {$msg}\n";
                 $response = json_decode($msg);
                 switch($response->type)
                 {

@@ -3,6 +3,8 @@
 namespace App\Exchange;
 
 use \App\Exchange;
+use \App\Pair;
+use \App\Tick;
 
 class Gdax
 {
@@ -87,6 +89,13 @@ class Gdax
                 $price = $tick->price;
                 $size = $tick->size;
                 $side = $tick->side;
+
+                $EPair->ticks()->firstOrCreate([
+                    'trade_id'=>$trade_id,
+                    'size'=>$size,
+                    'price'=>$price,
+                    'timestamp'=>date('Y-m-d H:i:s',strtotime($timestamp)),
+                ]);
 
                 $oldestTime = strtotime($timestamp);
                 $after=$trade_id;
